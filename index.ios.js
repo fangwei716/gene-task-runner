@@ -1,31 +1,68 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
+ * gene app
+ * search "fetch" to see where it talks to the server
  */
+'use strict'
 
 import React, { Component } from 'react';
 import {
   AppRegistry,
+  AsyncStorage,
   StyleSheet,
   Text,
   View
 } from 'react-native';
+import Login from './view/login';
+import Main from './view/main';
 
 class gene extends Component {
+  constructor() {
+    super();
+    this.state = {
+      in: false,
+      main: <View></View>,
+    };
+    // this.state = {
+    //   in: true,
+    //   main: <Main uid="jdshfdkjshafhdjk" exitGene={()=>this._exitGene()}/>,
+    // };
+  }
+
+  _enterGene() {
+    this.setState({
+      in: true,
+    });
+    this._renderMain();
+  }
+
+  _exitGene() {
+    this.setState({
+      in: false,
+    });
+    AsyncStorage.setItem('username','');
+    AsyncStorage.setItem('uid','');
+    AsyncStorage.setItem('idReady','false');
+  }
+
+  _renderMain() {
+    AsyncStorage.getItem("uid").then((value) =>{
+      if (value !== '') {
+        let main = <Main uid={value} exitGene={()=>this._exitGene()}/>
+        this.setState({
+          main
+        })
+      }
+    });
+  }
+
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+        {
+          this.state.in?
+          this.state.main:
+          <Login enterGene={() => this._enterGene()}/>
+        }
       </View>
     );
   }
@@ -37,16 +74,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
   },
 });
 

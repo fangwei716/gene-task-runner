@@ -24,12 +24,15 @@ import {
   MKColor,
   MKCheckbox,
   MKButton,
+  MKTextField,
   mdl,
 } from 'react-native-material-kit';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Item from './item';
 
 const theme = getTheme();
+
+const FloatInput = mdl.Textfield.textfieldWithFloatingLabel().build();
 
 setTheme({checkboxStyle: {
   fillColor: MKColor.LightGreen,
@@ -51,7 +54,7 @@ class UserInfo extends Component{
 			<View style={styles.card}>
 				<View style={theme.cardStyle}>
 				  <Image source={{uri:'card'}} style={theme.cardImageStyle}/>
-				  <Text style={theme.cardActionStyle}>My Modules (6)</Text>
+				  <Text style={theme.cardActionStyle}>My Tasks (6)</Text>
 				  <View style={styles.icon}>
          		<Text style={styles.iconText}>{this.state.username.charAt(0).toUpperCase()}</Text>
         	</View>
@@ -203,6 +206,9 @@ class MainView extends Component{
     this.state = {
       showModal: false,
       modalTitle: '',
+      modules: ['HISAT','module 2','module 3','module 4','module 5'],
+      moduleChecked: [false,false,false,false,false],
+      taskConfiguration: false,
     }
 	}
 
@@ -210,7 +216,69 @@ class MainView extends Component{
 		StatusBar.setBarStyle(1);
 	}
 
+  _switchCheck(index) {
+    const { moduleChecked } = this.state;
+    moduleChecked[index] = !moduleChecked[index];
+    this.setState({
+      moduleChecked
+    });
+  }
+
+  _closeModal() {
+    this.setState({
+      showModal: false,
+      modalTitle: '',
+      moduleChecked: [false,false,false,false,false],
+    });
+  }
+
+  _back() {
+    this.setState({
+      taskConfiguration: false,
+    });
+  }
+
+  _continue() {
+    const { moduleChecked } = this.state;
+    let counter = 0;
+    for (let isChecked of moduleChecked) {
+      if (isChecked) {
+        counter ++;
+      }
+    }
+    if (counter>1) {
+      AlertIOS.alert(
+       'Add multi-module Task',
+       `You choosed ${counter} modules. Please confirm to add a quick multi-module task with default settings.`,
+       [{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        {text: 'OK', onPress: () => this._addMultiTask(moduleChecked)}]
+      );
+    }else if (counter === 1){
+      this.setState({
+        taskConfiguration: true,
+      })
+    }else{
+      AlertIOS.alert('At least select one module.')
+    }
+  }
+
+  _addMultiTask(moduleChecked) {
+    //fetch add a new multi-task
+    //callback, return new task list data and force task list to update
+    this._closeModal();
+  }
+
 	render() {
+    const { modules,moduleChecked,taskConfiguration } = this.state;
+    const moduleList = modules.map((elem, index) => {
+      return (
+        <View key={"checkbox"+index} style={styles.module}>
+          <Text style={styles.moduleText}>{elem}</Text>
+          <MKCheckbox style={styles.checkBox} checked={false} onCheckedChange={() => this._switchCheck(index)}/>
+        </View>
+      );
+    })
+
 		return(
 			<View style={styles.container}>
 				<UserInfo username="Wei" uid={this.props.uid}/>
@@ -220,32 +288,32 @@ class MainView extends Component{
           transparent={false}
           visible={this.state.showModal}>
           <View style={styles.modalContainer}>
+          { taskConfiguration?
             <View style={styles.modalNav}>
-              <TouchableHighlight underlayColor="#fff" onPress={() => this._closeModal()}><Text style={[styles.btnText,{width:80,textAlign:"left"}]}>Cancle</Text></TouchableHighlight>
-              <Text style={styles.navTitle}>{this.state.modalTitle}</Text>
-              <TouchableHighlight underlayColor="#fff" onPress={() => this._setTime()}><Text style={[styles.btnText,,{width:80,textAlign:"right"}]}>Continue</Text></TouchableHighlight>
+              <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._back()}><Text style={[styles.btnText,{width:80,textAlign:"left"}]}>Back</Text></TouchableHighlight>
+                <Text style={styles.navTitle}>Task Configuration</Text>
+                <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._addSingleTask()}><Text style={[styles.btnText,,{width:80,textAlign:"right"}]}>Add Task</Text></TouchableHighlight>
+            </View>:
+            <View style={styles.modalNav}>
+              <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._closeModal()}><Text style={[styles.btnText,{width:80,textAlign:"left"}]}>Cancle</Text></TouchableHighlight>
+                <Text style={styles.navTitle}>{this.state.modalTitle}</Text>
+                <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._continue()}><Text style={[styles.btnText,,{width:80,textAlign:"right"}]}>Continue</Text></TouchableHighlight>
             </View>
+          }
             <ScrollView style={styles.modalContent}>
-              <View style={styles.module}>
-                <Text style={styles.moduleText}>Module 1</Text>
-                <MKCheckbox style={styles.checkBox} checked={true}/>
-              </View>
-              <View style={styles.module}>
-                <Text style={styles.moduleText}>Module 2</Text>
-                <MKCheckbox style={styles.checkBox} checked={true}/>
-              </View>
-              <View style={styles.module}>
-                <Text style={styles.moduleText}>Module 3</Text>
-                <MKCheckbox style={styles.checkBox} checked={true}/>
-              </View>
-              <View style={styles.module}>
-                <Text style={styles.moduleText}>Module 4</Text>
-                <MKCheckbox style={styles.checkBox} checked={true}/>
-              </View>
-              <View style={styles.module}>
-                <Text style={styles.moduleText}>Module 5</Text>
-                <MKCheckbox style={styles.checkBox} checked={true}/>
-              </View>
+              { taskConfiguration?
+                <View style={styles.configContainer}>
+                  <Text style={styles.configTitle}>HISAT <Text style={styles.configTitleSmall}>Hierarchical Indexing for Spliced Alignment of Transcripts</Text></Text>
+                  <Text style={styles.configDes}>HISAT is a fast and sensitive spliced alignment program for mapping RNA-seq reads. In addition to one global FM index that represents a whole genome, HISAT uses a large set of small FM indexes that collectively cover the whole genome (each index represents a genomic region of ~64,000 bp and ~48,000 indexes are needed to cover the human genome). These small indexes (called local indexes) combined with several alignment strategies enable effective alignment of RNA-seq reads, in particular, reads spanning multiple exons. The memory footprint of HISAT is relatively low (~4.3GB for the human genome). We have developed HISAT based on the Bowtie2 implementation to handle most of the operations on the FM index. </Text>
+                  <Text style={styles.configInfo}>Version: <Text style={styles.configInfoSmall}>1.0</Text></Text>
+                  <Text style={styles.configInfo}>Author：<Text style={styles.configInfoSmall}>The Center for Computational Biology</Text></Text>
+                  <Text style={styles.configInfo}>Publish-date: <Text style={styles.configInfoSmall}>2016-05-09</Text></Text>
+                  <Text style={styles.configInfo}>Source-Language: <Text style={styles.configInfoSmall}>Python</Text></Text>
+                  <Text style={styles.configInfo}>Category: <Text style={styles.configInfoSmall}>Alignment</Text></Text>
+                  <Text style={styles.configInfo}>Tags: <Text style={styles.configInfoSmall}>Alignment, HISAT, FASTQ, SAM, BAM</Text></Text>
+                </View>:
+                moduleList
+              }
             </ScrollView>
           </View>
         </Modal>
@@ -426,5 +494,31 @@ const styles = StyleSheet.create({
     position:'absolute',
     top:0,
     right:0,
-  }
+  },
+  configContainer:{
+    padding: 15,
+  },
+  configTitle:{
+    fontSize:18,
+    fontWeight:'500',
+    paddingBottom:15,
+  },
+  configTitleSmall:{
+    fontSize:14,
+    fontWeight:'300',
+  },
+  configDes:{
+    fontSize: 14,
+    fontWeight:'300',
+    paddingBottom: 15,
+  },
+  configInfo:{
+    fontSize:14,
+    fontWeight:'500',
+    paddingBottom:5,
+  },
+  configInfoSmall:{
+    fontSize:14,
+    fontWeight:'300',
+  },
 })

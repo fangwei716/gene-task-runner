@@ -28,6 +28,7 @@ const FloatInput = mdl.Textfield.textfieldWithFloatingLabel().build();
 class LoginForm extends Component{
   static propTypes = {
     enterGene: React.PropTypes.func.isRequired,
+    inputFocus: React.PropTypes.func.isRequired,
   };
 
 	constructor(props) {
@@ -83,6 +84,8 @@ class LoginForm extends Component{
             returnKeyType = {"next"} 
             placeholder="Username"
             highlightColor={MKColor.LightGreen}
+            onFocus={() => this.props.inputFocus(true)}
+            onBlur={() => this.props.inputFocus(false)}
             onChangeText={(text) => this.setState({username:text})}
             onSubmitEditing={(event) => {this._password.focus();}} 
           />
@@ -92,6 +95,8 @@ class LoginForm extends Component{
             placeholder="Password" 
             password={true}
             highlightColor={MKColor.LightGreen}
+            onFocus={() => this.props.inputFocus(true)}
+            onBlur={() => this.props.inputFocus(false)}
             onChangeText={(text) => this.setState({password:text})}
             onSubmitEditing={(event) => this._submit()}       
           />
@@ -126,6 +131,7 @@ export default class extends Component{
 		super();
     this.state = {
       username:'',
+      offset: 20,
     }
 	}
   
@@ -135,6 +141,18 @@ export default class extends Component{
         this._touchID();
       }
     });
+  }
+
+  _inputFocused(isFocused) {
+    if (isFocused) {
+      this.setState({
+        offset: 100,
+      })
+    }else{
+      this.setState({
+        offset: 20,
+      })
+    }
   }
 
   _touchID = () => {
@@ -149,11 +167,11 @@ export default class extends Component{
 
 	render() {
 		return(
-			<View style={styles.container}>
+			<View style={[styles.container,{paddingBottom:this.state.offset}]}>
         <Image style={styles.logo} source={{uri:'gene'}}/>
         <Text style={styles.logoText}>A Sequencing Analysis Task Runner.</Text>
         <Text style={styles.logoText}>Get Started on gene.cityu.edu.hk</Text>
-				<LoginForm enterGene={()=>this.props.enterGene()}/>
+				<LoginForm inputFocus={(isFocused) => this._inputFocused(isFocused)} enterGene={()=>this.props.enterGene()}/>
 			</View>
 		)
 	}
@@ -167,7 +185,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     width: Util.size.width,
     height: Util.size.height,
-    paddingBottom:20,
   },
   formContainer:{
     alignItems: 'center',

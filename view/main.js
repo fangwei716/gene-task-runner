@@ -6,6 +6,7 @@
 import React, { Component } from 'react';
 import {
   AlertIOS,
+  Animated,
   Image,
   Modal,
   NavigatorIOS,
@@ -15,6 +16,7 @@ import {
   StatusBar,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   View
 } from 'react-native';
 import Util from './utils';
@@ -27,19 +29,15 @@ import {
   MKTextField,
   mdl,
 } from 'react-native-material-kit';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Item from './item';
+import Icon from 'react-native-vector-icons/Ionicons';
+import ScrollableTabView from 'react-native-scrollable-tab-view';
+
+import Task from './task';
+import Config from './config';
 
 const theme = getTheme();
 
 const FloatInput = mdl.Textfield.textfieldWithFloatingLabel().build();
-
-setTheme({checkboxStyle: {
-  fillColor: MKColor.LightGreen,
-  borderOnColor: MKColor.LightGreen,
-  borderOffColor: MKColor.LightGreen,
-  rippleColor: 'rgba(139,195,74,.15)',
-}});
 
 class UserInfo extends Component{
 	constructor(props){
@@ -54,8 +52,7 @@ class UserInfo extends Component{
 			<View style={styles.card}>
 				<View style={theme.cardStyle}>
 				  <Image source={{uri:'card'}} style={theme.cardImageStyle}/>
-				  <Text style={theme.cardActionStyle}>My Tasks (6)</Text>
-				  <View style={styles.icon}>
+				  <View style={styles.iconLetter}>
          		<Text style={styles.iconText}>{this.state.username.charAt(0).toUpperCase()}</Text>
         	</View>
         	<View style={styles.usernameContainer}>
@@ -68,134 +65,132 @@ class UserInfo extends Component{
 	}
 }
 
-class List extends Component{
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [{
-        index:0,
-        title:'Some name for the task',
-        created: '2016.05.12 16:18',
-        completed: 10,
-        link: 'http://www.google.com',
-        component:'module3',
-      },{
-        index:1,
-        title:'My fifth task',
-        created: '2016.05.12 14:28',
-        completed: 30,
-        link: 'http://www.google.com',
-        component:'module4',
-      },{
-        index:2,
-        title:'A task for analyzing something',
-        created: '2016.05.12 11:56',
-        completed: 60,
-        link: 'http://www.google.com',
-        component:'module2',
-      },{
-        index:3,
-        title:'My third task',
-        created: '2016.05.12 08:52',
-        completed: 80,
-        link: 'http://www.google.com',
-        component:'module1, module2',
-      },{
-        index:4,
-        title:'Another task of mine',
-        created: '2016.05.02 16:39',
-        completed: 100,
-        link: 'http://www.google.com',
-        component:'module4',
-      },{
-        index:5,
-        title:'My first task',
-        created: '2016.04.18 17:39',
-        completed: 100,
-        link: 'http://www.google.com',
-        component:'module3',
-      }],
-      isRefreshing: false,
-      refreshTitle: "pull down to update"
-    }
+class Module extends Component{
+  render() {
+    return(
+      <ScrollView>
+        <View></View>
+      </ScrollView>
+    )
   }
+}
 
-  componentWillMount() {
-    // fetch
-    // Util.post("http://dnafw.com:8100/iosapp/all_orders/",{uid:this.props.uid},(resData) => {
-    //     if (resData.error!=="true") {
-    //       console.log(resData);
-    //       this.setState({
-    //         rowData: resData,
-    //       });
-    //     }
-    // });
+class Network extends Component{
+  render() {
+    return(
+      <ScrollView>
+        <View></View>
+      </ScrollView>
+    )
   }
+}
 
-  _deleteTask(index) {
-    const {data} = this.state;
-    for (var i = 0; i < data.length; i++) {
-      if(data[i].index === index){
-        data.splice(i,1)
+class Setting extends Component{
+  render() {
+    return(
+      <ScrollView>
+        <View></View>
+      </ScrollView>
+    )
+  }
+}
+
+class Report extends Component{
+  render() {
+    return(
+      <ScrollView>
+        <View></View>
+      </ScrollView>
+    )
+  }
+}
+
+const TabBar = React.createClass({
+  selectedTabIcons: [],
+  unselectedTabIcons: [],
+
+  propTypes: {
+    goToPage: React.PropTypes.func,
+    activeTab: React.PropTypes.number,
+    tabs: React.PropTypes.array
+  },
+
+  renderTabOption(name, page) {
+    var isTabActive = this.props.activeTab === page;
+
+    return (
+      <TouchableOpacity key={name} onPress={() => this.props.goToPage(page)} style={styles.tab}>
+        <Icon name={name} size={27} color="#8bc34a" style={styles.icon}
+              ref={(icon) => { this.selectedTabIcons[page] = icon }}/>
+        <Icon name={name} size={27} color='#888' style={styles.icon}
+              ref={(icon) => { this.unselectedTabIcons[page] = icon }}/>
+      </TouchableOpacity>
+    );
+  },
+
+  componentDidMount() {
+    this.setAnimationValue({value: this.props.activeTab});
+    this._listener = this.props.scrollValue.addListener(this.setAnimationValue);
+  },
+
+  setAnimationValue({value}) {
+    var currentPage = this.props.activeTab;
+
+    this.unselectedTabIcons.forEach((icon, i) => {
+      var iconRef = icon;
+
+      if (!icon.setNativeProps && icon !== null) {
+        iconRef = icon.refs.icon_image
       }
-    }
-    this.setState({
-      data
-    })
-    //fetch 
-  }
 
-  _onRefresh() {
-    this.setState({
-      isRefreshing: true,
-      refreshTitle: "updating"
+      if (value - i >= 0 && value - i <= 1) {
+        iconRef.setNativeProps({ style: {opacity: value - i} });
+      }
+      if (i - value >= 0 &&  i - value <= 1) {
+        iconRef.setNativeProps({ style: {opacity: i - value} });
+      }
     });
-
-    // fetch
-    // Util.post("http://dnafw.com:8100/iosapp/all_orders/",{uid:this.props.uid},(resData) => {
-    //     if (resData.error!=="true") {
-    //       this.setState({
-    //         isRefreshing: false,
-    //         data: resData,
-    //         refreshTitle: "更新完毕",
-    //       });
-    //     }else{
-    //       this.setState({
-    //         isRefreshing: false,
-    //         refreshTitle: "更新失败",
-    //       });
-    //     }
-    //     setTimeout(() => {
-    //       this.setState({
-    //         refreshTitle: "下拉更新"
-    //       });
-    //     }, 1000);
-    // });
-  }
+  },
 
   render() {
-    const items = this.state.data.map((elem, index) => {
-      return (
-        <Item deleteTask={(i) => this._deleteTask(i)}key={'item'+index} data={elem} navigator={this.props.navigator}/>
-      );
-    })
+    var containerWidth = this.props.containerWidth;
+    var numberOfTabs = this.props.tabs.length;
+    var tabUnderlineStyle = {
+      position: 'absolute',
+      width: containerWidth / numberOfTabs,
+      height: 2,
+      backgroundColor: '#8bc34a',
+      bottom: 0,
+    };
 
-    return(
-      <ScrollView 
-        style={styles.listContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={this.state.isRefreshing}
-            title={this.state.refreshTitle}
-            onRefresh={() => this._onRefresh()}
-            tintColor="#ddd"
-          />
-        }
-      >
-        <View style={styles.list}>
-          {items}
+    var left = this.props.scrollValue.interpolate({
+      inputRange: [0, 1], outputRange: [0, containerWidth / numberOfTabs]
+    });
+
+    return (
+      <View>
+        <View style={[styles.tabs, this.props.style, ]}>
+          {this.props.tabs.map((tab, i) => this.renderTabOption(tab, i))}
         </View>
-      </ScrollView>
+        <Animated.View style={[tabUnderlineStyle, {left}]} />
+      </View>
+    );
+  },
+});
+
+class TabView extends Component{
+  render() {
+    return(
+      <View>
+        <ScrollableTabView 
+          renderTabBar={() => <TabBar />}>
+          <Module tabLabel="ios-albums-outline" />
+          <Task navigator={this.props.navigator} tabLabel="ios-list-box-outline" />
+          <Report tabLabel="ios-contact-outline" />
+          <Network tabLabel="ios-people-outline" />
+          <Setting tabLabel="ios-settings-outline" />
+        </ScrollableTabView>
+      </View>
     )
   }
 }
@@ -206,9 +201,6 @@ class MainView extends Component{
     this.state = {
       showModal: false,
       modalTitle: '',
-      modules: ['HISAT','module 2','module 3','module 4','module 5'],
-      moduleChecked: [false,false,false,false,false],
-      taskConfiguration: false,
     }
 	}
 
@@ -216,106 +208,27 @@ class MainView extends Component{
 		StatusBar.setBarStyle(1);
 	}
 
-  _switchCheck(index) {
-    const { moduleChecked } = this.state;
-    moduleChecked[index] = !moduleChecked[index];
-    this.setState({
-      moduleChecked
-    });
-  }
-
-  _closeModal() {
+  _hideModal() {
     this.setState({
       showModal: false,
-      modalTitle: '',
-      moduleChecked: [false,false,false,false,false],
     });
-  }
-
-  _back() {
-    this.setState({
-      taskConfiguration: false,
-    });
-  }
-
-  _continue() {
-    const { moduleChecked } = this.state;
-    let counter = 0;
-    for (let isChecked of moduleChecked) {
-      if (isChecked) {
-        counter ++;
-      }
-    }
-    if (counter>1) {
-      AlertIOS.alert(
-       'Add multi-module Task',
-       `You choosed ${counter} modules. Please confirm to add a quick multi-module task with default settings.`,
-       [{text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        {text: 'OK', onPress: () => this._addMultiTask(moduleChecked)}]
-      );
-    }else if (counter === 1){
-      this.setState({
-        taskConfiguration: true,
-      })
-    }else{
-      AlertIOS.alert('At least select one module.')
-    }
-  }
-
-  _addMultiTask(moduleChecked) {
-    //fetch add a new multi-task
-    //callback, return new task list data and force task list to update
-    this._closeModal();
   }
 
 	render() {
     const { modules,moduleChecked,taskConfiguration } = this.state;
-    const moduleList = modules.map((elem, index) => {
-      return (
-        <View key={"checkbox"+index} style={styles.module}>
-          <Text style={styles.moduleText}>{elem}</Text>
-          <MKCheckbox style={styles.checkBox} checked={false} onCheckedChange={() => this._switchCheck(index)}/>
-        </View>
-      );
-    })
 
 		return(
 			<View style={styles.container}>
 				<UserInfo username="Wei" uid={this.props.uid}/>
-        <List navigator={this.props.navigator}/>
+        <TabView navigator={this.props.navigator}/>
         <Modal
           animated={true}
           transparent={false}
           visible={this.state.showModal}>
-          <View style={styles.modalContainer}>
-          { taskConfiguration?
-            <View style={styles.modalNav}>
-              <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._back()}><Text style={[styles.btnText,{width:80,textAlign:"left"}]}>Back</Text></TouchableHighlight>
-                <Text style={styles.navTitle}>Task Configuration</Text>
-                <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._addSingleTask()}><Text style={[styles.btnText,,{width:80,textAlign:"right"}]}>Add Task</Text></TouchableHighlight>
-            </View>:
-            <View style={styles.modalNav}>
-              <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._closeModal()}><Text style={[styles.btnText,{width:80,textAlign:"left"}]}>Cancle</Text></TouchableHighlight>
-                <Text style={styles.navTitle}>{this.state.modalTitle}</Text>
-                <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._continue()}><Text style={[styles.btnText,,{width:80,textAlign:"right"}]}>Continue</Text></TouchableHighlight>
-            </View>
-          }
-            <ScrollView style={styles.modalContent}>
-              { taskConfiguration?
-                <View style={styles.configContainer}>
-                  <Text style={styles.configTitle}>HISAT <Text style={styles.configTitleSmall}>Hierarchical Indexing for Spliced Alignment of Transcripts</Text></Text>
-                  <Text style={styles.configDes}>HISAT is a fast and sensitive spliced alignment program for mapping RNA-seq reads. In addition to one global FM index that represents a whole genome, HISAT uses a large set of small FM indexes that collectively cover the whole genome (each index represents a genomic region of ~64,000 bp and ~48,000 indexes are needed to cover the human genome). These small indexes (called local indexes) combined with several alignment strategies enable effective alignment of RNA-seq reads, in particular, reads spanning multiple exons. The memory footprint of HISAT is relatively low (~4.3GB for the human genome). We have developed HISAT based on the Bowtie2 implementation to handle most of the operations on the FM index. </Text>
-                  <Text style={styles.configInfo}>Version: <Text style={styles.configInfoSmall}>1.0</Text></Text>
-                  <Text style={styles.configInfo}>Author：<Text style={styles.configInfoSmall}>The Center for Computational Biology</Text></Text>
-                  <Text style={styles.configInfo}>Publish-date: <Text style={styles.configInfoSmall}>2016-05-09</Text></Text>
-                  <Text style={styles.configInfo}>Source-Language: <Text style={styles.configInfoSmall}>Python</Text></Text>
-                  <Text style={styles.configInfo}>Category: <Text style={styles.configInfoSmall}>Alignment</Text></Text>
-                  <Text style={styles.configInfo}>Tags: <Text style={styles.configInfoSmall}>Alignment, HISAT, FASTQ, SAM, BAM</Text></Text>
-                </View>:
-                moduleList
-              }
-            </ScrollView>
-          </View>
+          <Config 
+            modalTitle={this.state.modalTitle}
+            hideModal={() => this._hideModal()}
+          />
         </Modal>
 				<View style={styles.col,styles.addBtn}>
 					<MKButton
@@ -340,7 +253,7 @@ class MainView extends Component{
               );
 					  }}
 					  >
-					  <Icon style={styles.actionIcon} name="add" size={30} color="#fff"/>
+					  <Icon style={styles.actionIcon} name="ios-add" size={35} color="#fff"/>
 					</MKButton>
 				</View>
 			</View>
@@ -376,10 +289,10 @@ const styles = StyleSheet.create({
   card:{
   	width:Util.size.width,
   	alignItems: 'stretch',
-  	height:150,
+  	height:100,
     padding:0,
   },
-  icon:{
+  iconLetter:{
     height:50,
     width:50,
     borderRadius:25,
@@ -434,91 +347,31 @@ const styles = StyleSheet.create({
   actionIcon:{
   	backgroundColor:'transparent',
   },
-  listContainer:{
-    width: Util.size.width,
-    height: Util.size.height - 150,
-    backgroundColor:'#e9e9e9',
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 10,
   },
-  list:{
-    paddingLeft:10,
-    paddingTop:0,
-    paddingBottom:70,
+  tabs: {
+    height: 45,
+    flexDirection: 'row',
+    paddingTop: 7,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomColor: 'rgba(0,0,0,0.05)',
+    backgroundColor:"#fff",
   },
-  btnText:{
-    color:"#f5f5f5",
-    fontSize:16,
-    paddingTop:10,
+  icon: {
+    position: 'absolute',
+    top: 0,
+    left: 27,
   },
-  modalContainer:{
-    height: Util.size.height,
-    width: Util.size.width,
-    backgroundColor:"#f1f1f1"
-  },
-  modalNav:{
-    position:"absolute",
-    height:60,
-    width:Util.size.width,
-    backgroundColor:MKColor.LightGreen,
+  iconContainer:{
     flexDirection:"row",
     justifyContent:"space-between",
-    paddingTop:20,
-    paddingLeft:15,
-    paddingRight:15
-  },
-  modalContent:{
-    width:Util.size.width,
-    height:Util.size.height-60,
-    marginTop:60
-  },
-  navTitle:{
-    paddingTop:8,
-    fontWeight:"500",
-    color:"#fff",
-    fontSize:18
-  },
-  module:{
-    padding: 15,
-    paddingLeft:25,
-    height:50,
-    borderBottomWidth: Util.pixel,
-    borderBottomColor: '#ddd',
-    flexDirection:'row',
-  },
-  moduleText:{
-    color: '#222',
-    fontWeight: '500',
-    fontSize:16,
-    width: Util.size.width - 100,
-  },
-  checkBox:{
-    position:'absolute',
-    top:0,
-    right:0,
-  },
-  configContainer:{
-    padding: 15,
-  },
-  configTitle:{
-    fontSize:18,
-    fontWeight:'500',
-    paddingBottom:15,
-  },
-  configTitleSmall:{
-    fontSize:14,
-    fontWeight:'300',
-  },
-  configDes:{
-    fontSize: 14,
-    fontWeight:'300',
-    paddingBottom: 15,
-  },
-  configInfo:{
-    fontSize:14,
-    fontWeight:'500',
-    paddingBottom:5,
-  },
-  configInfoSmall:{
-    fontSize:14,
-    fontWeight:'300',
+    width:60,
   },
 })

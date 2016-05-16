@@ -1,4 +1,5 @@
 // obtained from react native tutorials
+'use strict'
 
 import React from 'react';
 import { PixelRatio } from 'react-native';

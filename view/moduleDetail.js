@@ -27,9 +27,14 @@ setTheme({radioStyle: {
 }});
 
 export class HISAT extends Component{
-  constructor() {
-    super();
+  static defaultProps = {
+    title:'',
+  };
+
+  constructor(props) {
+    super(props);
     this.state = {
+      title:'',
       thread: '',
       entry: '',
       feature: '',
@@ -57,11 +62,21 @@ export class HISAT extends Component{
         <Text>Configurations:</Text>
         <View style={styles.textfield}>
           <TextInput
+            returnKeyType = {"next"}
+            placeholder="task name"
+            defaultValue = {this.props.title}
+            style = {styles.input}
+            onSubmitEditing={(event) => {this._num.focus();}} 
+          />
+        </View>
+        <Text style={styles.textfieldText}>task name</Text>
+        <View style={styles.textfield}>
+          <TextInput
+            ref={component => this._num = component}
             placeholder="number of thread"
             keyboardType = "number-pad"
             defaultValue = "4"
             style = {styles.input}
-            onSubmitEditing={(event) => {this._entry.focus();}} 
           />
         </View>
         <Text style={styles.textfieldText}>number of thread</Text>
@@ -71,7 +86,6 @@ export class HISAT extends Component{
             defaultValue = "2000000"
             keyboardType = "number-pad"
             style={styles.input}
-            onSubmitEditing={(event) => {this._feature.focus();}} 
           />
         </View>
         <Text style={styles.textfieldText}>maximum queue entry</Text>

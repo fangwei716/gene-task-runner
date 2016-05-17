@@ -32,23 +32,14 @@ export default class extends Component{
     this.state = {
       showModal:false,
       moduleSelected: 0,
-      modalTitle: '',
     }
   }
 
   _initSingleTask(moduleSelected) {
-     AlertIOS.prompt(
-      'Add Task',
-      'Please enter the name for your task.',
-      [
-        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-        {text: 'OK', onPress: (title) => {
-          this.setState({showModal:true,modalTitle:title})
-        }},
-      ],
-      'plain-text',
-      'New task'
-    );
+    this.setState({
+      showModal:true,
+      moduleSelected,
+    });
   }
 
   _hideModal() {

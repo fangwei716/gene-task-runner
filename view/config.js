@@ -161,7 +161,7 @@ export default class extends Component{
         }
         <ScrollView style={styles.modalContent}>
           { taskConfiguration?
-            <HISAT/>:
+            <HISAT title={this.props.modalTitle}/>:
             moduleList
           }
         </ScrollView>

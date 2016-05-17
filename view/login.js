@@ -73,7 +73,7 @@ class LoginForm extends Component{
       <View style={styles.formContainer}>
         <View style={styles.icon}>
           <Text style={styles.iconText}>
-            {this.state.username.charAt(0)?this.state.username.charAt(0).toUpperCase():<Icon name="ios-help" size={60} color="#fff" />}
+            {this.state.username?this.state.username.charAt(0).toUpperCase():<Icon name="ios-help" size={60} color="#fff" />}
           </Text>
         </View>
   			<View style={styles.col}>

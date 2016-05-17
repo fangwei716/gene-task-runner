@@ -155,7 +155,7 @@ export default class extends Component{
 const styles = StyleSheet.create({
   listContainer:{
     width: Util.size.width,
-    height: Util.size.height - 150,
+    height: Util.size.height - 145,
     backgroundColor:'#f5f5f5',
   },
   list:{

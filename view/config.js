@@ -27,6 +27,44 @@ setTheme({checkboxStyle: {
   rippleColor: 'rgba(139,195,74,.15)',
 }});
 
+export class SingleConfig extends Component{
+  constructor(props){
+    super(props);
+  }
+
+  _addSingleTask() {
+    // fetch
+    // read config
+    this.props.hideModal();
+  }
+
+  _selectModule() {
+    switch(this.props.moduleSelected){
+      case 1:
+        return <HISAT/>;
+        break;
+      default:
+        return <HISAT/>;
+        break;
+    }
+  }
+
+  render() {
+    return(
+      <View style={styles.modalContainer}>
+        <View style={styles.modalNav}>
+          <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this.props.hideModal()}><Text style={[styles.btnText,{width:80,textAlign:"left"}]}>Cancle</Text></TouchableHighlight>
+          <Text style={styles.navTitle}>Task Configuration</Text>
+          <TouchableHighlight underlayColor={MKColor.LightGreen} onPress={() => this._addSingleTask()}><Text style={[styles.btnText,,{width:80,textAlign:"right"}]}>Add Task</Text></TouchableHighlight>
+        </View>
+        <ScrollView style={styles.modalContent}>
+          {this._selectModule()}
+        </ScrollView>
+      </View>
+    )
+  }
+}
+
 export default class extends Component{
   constructor(props) {
     super(props);
@@ -70,7 +108,9 @@ export default class extends Component{
   }
 
   _addSingleTask() {
-
+    // fetch
+    // read config
+    this.props.hideModal();
   }
 
   _addMultiTask(moduleChecked) {

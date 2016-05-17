@@ -18,14 +18,14 @@ import Main from './view/main';
 class gene extends Component {
   constructor() {
     super();
-    // this.state = {
-    //   in: false,
-    //   main: <View></View>,
-    // };
     this.state = {
-      in: true,
-      main: <Main uid="jdshfdkjshafhdjk" exitGene={()=>this._exitGene()}/>,
+      in: false,
+      main: <View></View>,
     };
+    // this.state = {
+    //   in: true,
+    //   main: <Main uid="jdshfdkjshafhdjk" exitGene={()=>this._exitGene()}/>,
+    // };
   }
 
   _enterGene() {

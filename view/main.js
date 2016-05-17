@@ -17,7 +17,8 @@ import {
   Text,
   TouchableHighlight,
   TouchableOpacity,
-  View
+  View,
+  WebView
 } from 'react-native';
 import Util from './utils';
 import {
@@ -34,6 +35,10 @@ import ScrollableTabView from 'react-native-scrollable-tab-view';
 
 import Task from './task';
 import Config from './config';
+import Report from './report';
+import Setting from './setting';
+import Network from './network';
+import Module from './module';
 
 const theme = getTheme();
 
@@ -63,46 +68,6 @@ class UserInfo extends Component{
 			</View>
 		)
 	}
-}
-
-class Module extends Component{
-  render() {
-    return(
-      <ScrollView>
-        <View></View>
-      </ScrollView>
-    )
-  }
-}
-
-class Network extends Component{
-  render() {
-    return(
-      <ScrollView>
-        <View></View>
-      </ScrollView>
-    )
-  }
-}
-
-class Setting extends Component{
-  render() {
-    return(
-      <ScrollView>
-        <View></View>
-      </ScrollView>
-    )
-  }
-}
-
-class Report extends Component{
-  render() {
-    return(
-      <ScrollView>
-        <View></View>
-      </ScrollView>
-    )
-  }
 }
 
 const TabBar = React.createClass({
@@ -188,7 +153,7 @@ class TabView extends Component{
           <Task navigator={this.props.navigator} tabLabel="ios-list-box-outline" />
           <Report tabLabel="ios-contact-outline" />
           <Network tabLabel="ios-people-outline" />
-          <Setting tabLabel="ios-settings-outline" />
+          <Setting exitGene={this.props.exitGene} navigator={this.props.navigator} tabLabel="ios-settings-outline" />
         </ScrollableTabView>
       </View>
     )
@@ -220,7 +185,7 @@ class MainView extends Component{
 		return(
 			<View style={styles.container}>
 				<UserInfo username="Wei" uid={this.props.uid}/>
-        <TabView navigator={this.props.navigator}/>
+        <TabView exitGene={this.props.exitGene} navigator={this.props.navigator}/>
         <Modal
           animated={true}
           transparent={false}
@@ -273,6 +238,7 @@ export default class extends Component{
           navigationBarHidden: true,
           backButtonTitle: 'back',
           shadowHidden: true,
+          passProps:{exitGene: this.props.exitGene},
         }}
       />
     );

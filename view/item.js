@@ -19,7 +19,7 @@ class Report extends Component{
 	render() {
 		return(
 			<WebView
-        automaticallyAdjustContentInsets={false}
+				automaticallyAdjustContentInsets={false}
         source={{uri:this.props.link}}
         javaScriptEnabled={true}
         domStorageEnabled={true}
@@ -100,12 +100,12 @@ const styles = StyleSheet.create({
 		marginBottom:15,
 		backgroundColor:'#fff',
 		shadowColor: "#777",
-	    shadowOpacity: 0.3,
-	    shadowRadius: 2,
-	    shadowOffset: {
-	      height: 2,
-	      width: 0
-	    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    shadowOffset: {
+      height: 2,
+      width: 0
+    },
 	},
 	textContainer:{
 		paddingTop: 10,
